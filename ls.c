@@ -13,6 +13,7 @@ static int opt_all = 0;
 static int opt_long = 0;
 static int opt_human = 0;
 static int opt_recursive = 0;
+static int opt_time = 0;
 
 static void human_size(long size)
 {
@@ -108,6 +109,24 @@ static int is_dot(const char *name)
     return strcmp(name, ".") == 0 || strcmp(name, "..") == 0;
 }
 
+static char sort_dir[4096];
+
+static int compare_mtime(const struct dirent **a, const struct dirent **b)
+{
+    char pa[sizeof sort_dir + 256], pb[sizeof sort_dir + 256];
+    struct stat sa, sb;
+
+    snprintf(pa, sizeof pa, "%s/%s", sort_dir, (*a)->d_name);
+    snprintf(pb, sizeof pb, "%s/%s", sort_dir, (*b)->d_name);
+    if (lstat(pa, &sa) != 0 || lstat(pb, &sb) != 0)
+        return alphasort(a, b);
+    if (sa.st_mtime > sb.st_mtime)
+        return -1;
+    if (sa.st_mtime < sb.st_mtime)
+        return 1;
+    return alphasort(a, b);
+}
+
 static int list_dir(const char *path)
 {
     DIR *d;
@@ -120,7 +139,8 @@ static int list_dir(const char *path)
         return 1;
     }
 
-    n = scandir(path, &entries, NULL, alphasort);
+    snprintf(sort_dir, sizeof sort_dir, "%s", path);
+    n = scandir(path, &entries, NULL, opt_time ? compare_mtime : alphasort);
     if (n < 0) {
         fprintf(stderr, "ls: cannot read directory '%s': %s\n", path, strerror(errno));
         free(entries);
@@ -170,7 +190,8 @@ static void usage(void)
             "  -a  show all files, including names starting with .\n"
             "  -l  use a long listing format\n"
             "  -h  print sizes in human readable format (with -l)\n"
-            "  -R  list subdirectories recursively\n");
+            "  -R  list subdirectories recursively\n"
+            "  -t  sort by modification time, newest first\n");
     exit(2);
 }
 
@@ -180,7 +201,7 @@ int main(int argc, char **argv)
     char *paths[256];
     int np = 0;
 
-    while ((opt = getopt(argc, argv, "lahR")) != -1) {
+    while ((opt = getopt(argc, argv, "lahRt")) != -1) {
         switch (opt) {
         case 'a':
             opt_all = 1;
@@ -193,6 +214,9 @@ int main(int argc, char **argv)
             break;
         case 'R':
             opt_recursive = 1;
+            break;
+        case 't':
+            opt_time = 1;
             break;
         default:
             usage();
