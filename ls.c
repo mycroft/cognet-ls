@@ -257,7 +257,7 @@ int main(int argc, char **argv)
                 printf("\n");
             if (np > 1)
                 printf("%s:\n", paths[i]);
-            if (stat(paths[i], &st) != 0) {
+            if (lstat(paths[i], &st) != 0) {
                 fprintf(stderr, "ls: cannot access '%s': %s\n", paths[i], strerror(errno));
                 rc = 1;
                 continue;
@@ -274,7 +274,7 @@ int main(int argc, char **argv)
     } else {
         struct stat st;
 
-        if (stat(paths[0], &st) != 0) {
+        if (lstat(paths[0], &st) != 0) {
             fprintf(stderr, "ls: cannot access '%s': %s\n", paths[0], strerror(errno));
             return 1;
         }
