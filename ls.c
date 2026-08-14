@@ -198,7 +198,7 @@ static int list_dir(const char *path)
 static void usage(void)
 {
     fprintf(stderr,
-            "usage: ls [-lahR] [file ...]\n"
+            "usage: ls [-lahRtr] [file ...]\n"
             "  -a  show all files, including names starting with .\n"
             "  -l  use a long listing format\n"
             "  -h  print sizes in human readable format (with -l)\n"
