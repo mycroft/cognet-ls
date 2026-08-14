@@ -165,7 +165,7 @@ static int list_dir(const char *path)
         struct stat st;
         char full[4096];
 
-        if (!opt_all && e->d_name[0] == '.' && !is_dot(e->d_name))
+        if (!opt_all && e->d_name[0] == '.')
             continue;
         if (opt_recursive && is_dot(e->d_name))
             continue;

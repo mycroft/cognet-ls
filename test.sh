@@ -47,11 +47,8 @@ chmod 755 "$DIR" "$DIR/sub"
 chmod 644 "$DIR/alpha" "$DIR/beta" "$DIR/.hidden" "$DIR/old" "$DIR/mid" "$DIR/sub/gamma"
 
 # --- default listing ---
-# NOTE: unlike GNU ls, . and .. are shown even without -a (known divergence).
 check_eq "default listing, alpha order" \
-    ".
-..
-alpha
+    "alpha
 beta
 link
 mid
@@ -104,9 +101,7 @@ old
 mid
 link
 beta
-alpha
-..
-." \
+alpha" \
     "$($BIN -r "$DIR")"
 
 # --- -R ---
