@@ -14,6 +14,7 @@ static int opt_long = 0;
 static int opt_human = 0;
 static int opt_recursive = 0;
 static int opt_time = 0;
+static int opt_reverse = 0;
 
 static void human_size(long size)
 {
@@ -127,6 +128,12 @@ static int compare_mtime(const struct dirent **a, const struct dirent **b)
     return alphasort(a, b);
 }
 
+static int compare_entries(const struct dirent **a, const struct dirent **b)
+{
+    int cmp = opt_time ? compare_mtime(a, b) : alphasort(a, b);
+    return opt_reverse ? -cmp : cmp;
+}
+
 static int list_dir(const char *path)
 {
     DIR *d;
@@ -140,7 +147,7 @@ static int list_dir(const char *path)
     }
 
     snprintf(sort_dir, sizeof sort_dir, "%s", path);
-    n = scandir(path, &entries, NULL, opt_time ? compare_mtime : alphasort);
+    n = scandir(path, &entries, NULL, compare_entries);
     if (n < 0) {
         fprintf(stderr, "ls: cannot read directory '%s': %s\n", path, strerror(errno));
         free(entries);
@@ -191,7 +198,8 @@ static void usage(void)
             "  -l  use a long listing format\n"
             "  -h  print sizes in human readable format (with -l)\n"
             "  -R  list subdirectories recursively\n"
-            "  -t  sort by modification time, newest first\n");
+            "  -t  sort by modification time, newest first\n"
+            "  -r  reverse order\n");
     exit(2);
 }
 
@@ -201,7 +209,7 @@ int main(int argc, char **argv)
     char *paths[256];
     int np = 0;
 
-    while ((opt = getopt(argc, argv, "lahRt")) != -1) {
+    while ((opt = getopt(argc, argv, "lahRtr")) != -1) {
         switch (opt) {
         case 'a':
             opt_all = 1;
@@ -217,6 +225,9 @@ int main(int argc, char **argv)
             break;
         case 't':
             opt_time = 1;
+            break;
+        case 'r':
+            opt_reverse = 1;
             break;
         default:
             usage();

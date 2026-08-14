@@ -18,6 +18,7 @@ This project was fully written by Qwen 3.8.
 - **`-h`** — human-readable sizes (K/M/G/T) with `-l`
 - **`-R`** — recursive listing, directories marked with a trailing `/`
 - **`-t`** — sort by modification time, newest first (ties broken by name)
+- **`-r`** — reverse the sort order (combinable with `-t`)
 - **Multiple paths** — per-path `name:` headers, like GNU `ls`
 - **Symlink-safe** — uses `lstat`, so links are listed without being followed
 
