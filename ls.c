@@ -89,7 +89,7 @@ static void print_time(const struct stat *st)
     printf("%s", buf);
 }
 
-static void print_long(const char *name, const struct stat *st)
+static void print_long(const char *path, const char *name, const struct stat *st)
 {
     struct passwd *pw = getpwuid(st->st_uid);
     struct group *gr = getgrgid(st->st_gid);
@@ -107,7 +107,17 @@ static void print_long(const char *name, const struct stat *st)
         printf("%7ld ", st->st_size);
     }
     print_time(st);
-    printf(" %s\n", name);
+    printf(" %s", name);
+    if (S_ISLNK(st->st_mode)) {
+        char target[4096];
+        ssize_t len = readlink(path, target, sizeof target - 1);
+
+        if (len > 0) {
+            target[len] = '\0';
+            printf(" -> %s", target);
+        }
+    }
+    printf("\n");
 }
 
 static int is_dot(const char *name)
@@ -178,7 +188,7 @@ static int list_dir(const char *path)
         }
 
         if (opt_long)
-            print_long(e->d_name, &st);
+            print_long(full, e->d_name, &st);
         else if (opt_recursive && S_ISDIR(st.st_mode))
             printf("%s/\n", e->d_name);
         else
@@ -266,7 +276,7 @@ int main(int argc, char **argv)
                 rc |= list_dir(paths[i]);
             else {
                 if (opt_long)
-                    print_long(paths[i], &st);
+                    print_long(paths[i], paths[i], &st);
                 else
                     printf("%s\n", paths[i]);
             }
@@ -282,7 +292,7 @@ int main(int argc, char **argv)
             rc = list_dir(paths[0]);
         else {
             if (opt_long)
-                print_long(paths[0], &st);
+                print_long(paths[0], paths[0], &st);
             else
                 printf("%s\n", paths[0]);
         }

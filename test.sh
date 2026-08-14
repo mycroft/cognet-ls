@@ -112,6 +112,8 @@ check_contains "-R: recursed into subdir" "gamma" "$r"
 # --- -l on a symlink argument ---
 lnk=$($BIN -l "$DIR/link")
 check_contains "-l symlink arg: shows link itself" "lrwxrwxrwx" "$lnk"
+check_contains "-l symlink arg: shows target" "-> alpha" "$lnk"
+check_contains "-l: symlink target shown" "link -> alpha" "$long"
 
 # --- error handling ---
 $BIN /nonexistent-path-xyz 2>/dev/null
