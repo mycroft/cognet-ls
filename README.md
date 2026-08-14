@@ -61,6 +61,15 @@ Examples:
 
 Flags combine freely (e.g. `-la`, `-lhR`, `-lt`).
 
+### Tests
+
+```sh
+make
+./test.sh
+```
+
+Runs the shell test suite covering flag behaviors and error handling (requires the built binary).
+
 ## References
 
 - [ls(1) — GNU coreutils manual](https://www.gnu.org/software/coreutils/manual/html_node/ls-invocation.html) — the behavior this project emulates
