@@ -77,6 +77,11 @@ static void print_time(const struct stat *st)
 {
     char buf[32];
     struct tm *tm = localtime(&st->st_mtime);
+
+    if (!tm) {
+        printf("???");
+        return;
+    }
     if (time(NULL) - st->st_mtime < 180 * 24 * 3600)
         strftime(buf, sizeof buf, "%b %e %H:%M", tm);
     else
